@@ -6,7 +6,7 @@ Library for handling Youtube Player in ListView.
 Features:
 ---------
 
-* Allows seamless transition betwean portrait and landscape (without rebufering) 
+* Allows seamless transition between portrait and landscape (without rebufering)
 * Allows playback of one video at time
 * Attaches it self to view in row and scrolls with it
 * Works from API level 17 (like YT API)
@@ -19,17 +19,17 @@ Todo:
 How to Use:
 -----------
 
-1. Add following line to your Activity declaration in AndroidManifest.xml
+- Add following line to your Activity declaration in AndroidManifest.xml
 ```
   android:configChanges="orientation|keyboardHidden|screenSize"
 ```
 
-2. Use builder to create Fragment instance (Remember to set proper YT_DEVELOPER_KEY)
+- Use builder to create Fragment instance (Remember to set proper YT_DEVELOPER_KEY for your own project)
 ```
   ytPlayer = YoutubeOverlayFragment.newBuilder(YT_DEVELOPER_KEY, this).setListId(android.R.id.list).buildAndAdd();
 ```
 
-3. Handle view click
+- Handle view click
 ```
   final ViewHolder holder;
   if (convertView == null) {
@@ -50,7 +50,7 @@ How to Use:
   });
 ```
 
-4. Override onBackPressed, so fragment can handle back button while in landscape
+- Override onBackPressed, so fragment can handle back button while in landscape
 ```
   @Override
   public void onBackPressed() {
@@ -60,4 +60,4 @@ How to Use:
           super.onBackPressed();
       }
   }
-  ```
+```
