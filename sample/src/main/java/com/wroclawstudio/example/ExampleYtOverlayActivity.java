@@ -64,7 +64,7 @@ public class ExampleYtOverlayActivity extends Activity {
             }
 
             final String videoId = getItem(position);
-            convertView.setOnClickListener(new View.OnClickListener() {
+            holder.rowMainImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     ytPlayer.onClick(holder.rowMainImage, videoId, position);
