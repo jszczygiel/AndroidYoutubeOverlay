@@ -7,7 +7,6 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +16,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.ListView;
+import android.widget.ScrollView;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 public class YoutubeOverlayFragment extends YouTubePlayerFragment implements YouTubePlayer.OnInitializedListener {
 
     private static final String HIDEABLE_VIEWS = "HIDEABLE_VIEWS";
-    private static final String LIST_ID = "LIST_ID";
+    private static final String SCROLLABLE_VIEW_ID = "SCROLLABLE_VIEW_ID";
     private static final String VIDEO_ID = "VIDEO_ID";
     private static final String YT_DEVELOPER_KEY = "YT_DEVELOPER_KEY";
 
@@ -42,7 +42,7 @@ public class YoutubeOverlayFragment extends YouTubePlayerFragment implements You
     private View videoContainer; // video container
     private View attachedImgContainer; // img container to which video container is attached
     private Display display; // used for getting screen size
-    private AbsListView attachedListView; // listView to which fragment is attached
+    private View attachedListView; // listView to which fragment is attached
     private int[] hideableViews; // videoContainer ids that are hidden in fullscreen playback
     private View actionBarView;
 
@@ -58,7 +58,7 @@ public class YoutubeOverlayFragment extends YouTubePlayerFragment implements You
         if (getArguments() != null) {
             this.videoId = getArguments().getString(VIDEO_ID, null);
             this.hideableViews = getArguments().getIntArray(HIDEABLE_VIEWS);
-            this.attachedListView = (AbsListView) getActivity().findViewById(getArguments().getInt(LIST_ID));
+            this.attachedListView = getActivity().findViewById(getArguments().getInt(SCROLLABLE_VIEW_ID));
             this.ytKey = getArguments().getString(YT_DEVELOPER_KEY);
 
         }
@@ -207,19 +207,34 @@ public class YoutubeOverlayFragment extends YouTubePlayerFragment implements You
                 }
             }
         });
+        if (attachedListView instanceof AbsListView) {
+            ((AbsListView)attachedListView).setOnScrollListener(new AbsListView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(AbsListView view, int scrollState) {
 
-        attachedListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+                }
+
+                @Override
+                public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                    if ((position < (firstVisibleItem + visibleItemCount)) && (position >= firstVisibleItem)) {
+                        YoutubeOverlayFragment.this.videoContainer.setVisibility(View.VISIBLE);
+                    } else {
+                        YoutubeOverlayFragment.this.videoContainer.setVisibility(View.GONE);
+                    }
+                }
+            });
+        }
+        
+    }
+
+    private void attachToView(View attachedContainer) {
+        this.attachedImgContainer = attachedContainer;
+        setVideoPostion(this.attachedImgContainer);
+        this.attachedImgContainer.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if ((position < (firstVisibleItem + visibleItemCount)) && (position >= firstVisibleItem)) {
-                    YoutubeOverlayFragment.this.videoContainer.setVisibility(View.VISIBLE);
-                } else {
-                    YoutubeOverlayFragment.this.videoContainer.setVisibility(View.GONE);
+            public void onScrollChanged() {
+                if (!fullscreen) {
+                    setVideoPostion(YoutubeOverlayFragment.this.attachedImgContainer);
                 }
             }
         });
@@ -306,10 +321,17 @@ public class YoutubeOverlayFragment extends YouTubePlayerFragment implements You
         }
     }
 
-    public void onClick(View img, String videoId, int position) {
+    public void onClick(View view, String videoId, int position) {
         setVideoId(videoId);
-        attachToView(img, position);
+        attachToView(view, position);
     }
+
+    public void onClick(View view, String videoId) {
+        setVideoId(videoId);
+        attachToView(view);
+    }
+
+    
 
     public static Builder newBuilder(String ytKey, Activity activity) {
         return new Builder(ytKey, activity);
@@ -318,7 +340,7 @@ public class YoutubeOverlayFragment extends YouTubePlayerFragment implements You
     public static class Builder {
 
         private final String ytKey;
-        private int listId;
+        private int scrollableViewId;
         private ArrayList<Integer> hideableViews;
         private Activity activity;
 
@@ -328,8 +350,8 @@ public class YoutubeOverlayFragment extends YouTubePlayerFragment implements You
             this.hideableViews = new ArrayList<>();
         }
 
-        public Builder setListId(int listId) {
-            this.listId = listId;
+        public Builder setScrollableViewId(int scrollableViewId) {
+            this.scrollableViewId = scrollableViewId;
             return this;
         }
 
@@ -343,7 +365,7 @@ public class YoutubeOverlayFragment extends YouTubePlayerFragment implements You
             Preconditions.checkArgument(!Strings.isNullOrEmpty(ytKey));
 
             FragmentManager fragmentManager = activity.getFragmentManager();
-            ListView listView = (ListView) activity.findViewById(listId);
+            View scrollableView = activity.findViewById(scrollableViewId);
             YoutubeOverlayFragment yt = (YoutubeOverlayFragment) fragmentManager.findFragmentByTag(YoutubeOverlayFragment.class.getName());
             if (yt != null) {
                 fragmentManager.beginTransaction().remove(yt).commit();
@@ -353,9 +375,9 @@ public class YoutubeOverlayFragment extends YouTubePlayerFragment implements You
             Bundle bundle = new Bundle();
             bundle.putIntArray(YoutubeOverlayFragment.HIDEABLE_VIEWS, Ints.toArray(hideableViews));
             bundle.putString(YoutubeOverlayFragment.YT_DEVELOPER_KEY, ytKey);
-            bundle.putInt(LIST_ID, listId);
+            bundle.putInt(SCROLLABLE_VIEW_ID, scrollableViewId);
             yt.setArguments(bundle);
-            fragmentManager.beginTransaction().add(((View) listView.getParent()).getId(), yt, YoutubeOverlayFragment.class.getName()).commit();
+            fragmentManager.beginTransaction().add(((View) scrollableView.getParent()).getId(), yt, YoutubeOverlayFragment.class.getName()).commit();
             return yt;
         }
 

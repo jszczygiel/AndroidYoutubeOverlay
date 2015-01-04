@@ -2,5 +2,8 @@
 <resources>
 
     <string name="app_name">YoutubeOverlayExample</string>
+    <string name="buttonListExample">List Example</string>
+    <string name="buttonScrollExample">ScrollView Example</string>
+    <string name="long_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ligula libero, ultricies et ante vel, faucibus posuere justo. Suspendisse varius, ex eget sodales consequat, ante odio eleifend arcu, at pulvinar ipsum metus eget erat. Aliquam tristique mi in feugiat fermentum. Curabitur nisl elit, blandit non risus a, porta auctor diam. Cras in tortor non dui interdum gravida sed et est. Aenean interdum in nibh et laoreet. Vivamus in interdum velit, eu aliquet mauris. Integer lacinia venenatis ante. Quisque ac mi ut augue rhoncus vehicula sed ac sem. Fusce tempus eleifend eros.</string>
 
 </resources>

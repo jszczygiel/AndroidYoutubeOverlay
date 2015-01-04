@@ -7,19 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.wroclawstudio.ytoverlay.YoutubeOverlayFragment;
 
-import java.util.ArrayList;
-
 /**
  * Created by jakubszczygiel on 15/11/14.
  */
-public class ExampleYtOverlayActivity extends Activity {
+public class ListExampleActivity extends Activity {
 
-    public static final String YT_DEVELOPER_KEY = "AIzaSyDugQYgHDcyOwx1pj-qBDPOFjFjouhS7Ms";
 
     public String[] youtubeUrls = new String[]{
             "1KOaT1vdLmc",
@@ -33,12 +29,12 @@ public class ExampleYtOverlayActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_list_example);
 
         ListView list = (ListView) findViewById(android.R.id.list);
         list.setAdapter(new YoutubeListAdapter(this, youtubeUrls));
 
-        ytPlayer = YoutubeOverlayFragment.newBuilder(YT_DEVELOPER_KEY, this).setListId(android.R.id.list).buildAndAdd();
+        ytPlayer = YoutubeOverlayFragment.newBuilder(Constants.YT_DEVELOPER_KEY, this).setScrollableViewId(android.R.id.list).buildAndAdd();
 
     }
 
