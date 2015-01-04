@@ -44,7 +44,7 @@ public class YoutubeOverlayFragment extends YouTubePlayerFragment implements You
     private Display display; // used for getting screen size
     private View attachedListView; // listView to which fragment is attached
     private int[] hideableViews; // videoContainer ids that are hidden in fullscreen playback
-    private View actionBarView;
+    private View actionBarView; // actionBarView
 
     private YoutubeOverlayFragment() {
         setRetainInstance(true);
@@ -208,7 +208,7 @@ public class YoutubeOverlayFragment extends YouTubePlayerFragment implements You
             }
         });
         if (attachedListView instanceof AbsListView) {
-            ((AbsListView)attachedListView).setOnScrollListener(new AbsListView.OnScrollListener() {
+            ((AbsListView) attachedListView).setOnScrollListener(new AbsListView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(AbsListView view, int scrollState) {
 
@@ -224,7 +224,7 @@ public class YoutubeOverlayFragment extends YouTubePlayerFragment implements You
                 }
             });
         }
-        
+
     }
 
     private void attachToView(View attachedContainer) {
@@ -256,6 +256,11 @@ public class YoutubeOverlayFragment extends YouTubePlayerFragment implements You
         videoContainer.setLayoutParams(params);
     }
 
+    /**
+     * Returns ActionBarHeight
+     *
+     * @return ActionBarHeight
+     */
     private int getActionBarHeight() {
         if (actionBarView != null) {
             return actionBarView.getHeight();
@@ -294,6 +299,11 @@ public class YoutubeOverlayFragment extends YouTubePlayerFragment implements You
         return false;
     }
 
+    /**
+     * Handles exiting from yt full screen videoContainer
+     *
+     * @return returns if action was handled
+     */
     public boolean onBackPressed() {
         if (isFullScreen()) {
             exitFullScreen();
@@ -321,17 +331,28 @@ public class YoutubeOverlayFragment extends YouTubePlayerFragment implements You
         }
     }
 
+    /**
+     * Used for handling onclick in AbsListView. Overlay takes size of view passed.
+     *
+     * @param videoId  yt video Id
+     * @param view     view to which yt overlay attaches it self
+     * @param position position in list for handling player visibility
+     */
     public void onClick(View view, String videoId, int position) {
         setVideoId(videoId);
         attachToView(view, position);
     }
 
+    /**
+     * Used for handling onclick in ScrollView. Overlay takes size of view passed.
+     *
+     * @param videoId yt video Id
+     * @param view    view to which yt overlay attaches it self
+     */
     public void onClick(View view, String videoId) {
         setVideoId(videoId);
         attachToView(view);
     }
-
-    
 
     public static Builder newBuilder(String ytKey, Activity activity) {
         return new Builder(ytKey, activity);
@@ -350,19 +371,37 @@ public class YoutubeOverlayFragment extends YouTubePlayerFragment implements You
             this.hideableViews = new ArrayList<>();
         }
 
+        /**
+         * Sets id of scrollable view to which overlay will attach. Required
+         *
+         * @param scrollableViewId viewId to hide
+         * @return returns Builder
+         */
         public Builder setScrollableViewId(int scrollableViewId) {
             this.scrollableViewId = scrollableViewId;
             return this;
         }
 
+        /**
+         * View id that is at the same hierarchy level as yt overlay. Will be hidden while player is in landscape mode
+         * Optional
+         *
+         * @param viewId viewId to hide
+         * @return returns Builder
+         */
         public Builder addHideableView(int viewId) {
             hideableViews.add(viewId);
             return this;
         }
 
+        /**
+         * Builds Fragment and adds it to view hierarchy
+         * @return returns YoutubeOverlayFragment instance that was added to hierarchy
+         */
         public YoutubeOverlayFragment buildAndAdd() {
             Preconditions.checkNotNull(activity);
             Preconditions.checkArgument(!Strings.isNullOrEmpty(ytKey));
+            Preconditions.checkArgument(scrollableViewId != 0);
 
             FragmentManager fragmentManager = activity.getFragmentManager();
             View scrollableView = activity.findViewById(scrollableViewId);
