@@ -29,4 +29,13 @@ public class ScrollExampleActivity extends Activity {
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        if (ytPlayer.onBackPressed()) {
+            // handled by fragment
+        } else {
+            super.onBackPressed();
+        }
+    }
 }
