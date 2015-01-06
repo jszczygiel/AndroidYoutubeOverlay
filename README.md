@@ -1,3 +1,6 @@
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-AndroidYoutubeOverlay-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1324)
+
+
 AndroidYoutubeOverlay
 =====================
 
