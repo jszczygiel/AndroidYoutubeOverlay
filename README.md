@@ -20,6 +20,7 @@ Todo:
 
 * Test with Horizontal ScrollView
 * Added Touch event passing to underlying scrollable View
+* Added RecyclerView support
 
 How to Use:
 -----------
